@@ -10,7 +10,12 @@ class SearchBooks extends Component {
         books: null
     }
 
-    updateQuery = (query) => {
+    /**
+     * look up for the books,
+     * update the state object and renders the component if it changes.
+     * @param {String} query
+     */
+    searchBooks = (query) => {
         if (query) {
             BooksAPI.search(query, 20).then((result) => {
                 if ( result.error ) {
@@ -30,30 +35,26 @@ class SearchBooks extends Component {
     }
     
     render() {
-        const { goHome, onSearch, shelfs, onMove } = this.props;
+        const { shelfs, onMoveBook } = this.props;
         const { books } = this.state;
         const { currentlyReading, wantToRead, read} = shelfs;
+        let title = 'Welcome, please search your book above :)';
+
+        if (this.state.query !== '') {
+            title = 'Sorry, there are not Books that matched your search';
+        }
 
         return (
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link to='/' className="close-search">Close</Link>
                     <div className="search-books-input-wrapper">
-                        {/* 
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-                  
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-                        <input onChange={(event) => this.updateQuery(event.target.value)} type="text" placeholder="Search by title or author" />
-
+                        <input onChange={(event) => this.searchBooks(event.target.value)} type="text" placeholder="Search by title or author" />
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        { !!books ?
+                        { !!books ? // if there are books show them, if not show failure message.
                             (books.map((book) => (
                                 <li key={book.id}>
                                     <Book
@@ -63,10 +64,10 @@ class SearchBooks extends Component {
                                             wantToRead.includes(book.id) && "wantToRead" ||
                                             read.includes(book.id) && "wantToRead" ||
                                             "none"}
-                                        onChangeShelf={this.props.onMove}
+                                        onChangeShelf={onMoveBook}
                                     />
                                 </li>
-                            ))) : ''}
+                            ))) : (<h2>{title}</h2>)}
                     </ol>
                 </div>
             </div>
