@@ -33,20 +33,25 @@ class SearchBooks extends Component {
         }
     }
 
-    bookShelf(searchedBook, shelf) {
-        let shelfBook = searchedBook;
-        shelf.forEach(function(book) {
-            if (searchedBook.id === book.id) {
-                shelfBook = book;
+    bookInShelf(book, booksInShelves) {
+        booksInShelves.forEach(b => { 
+            if (book.id === b.id) {
+                book.shelf = b.shelf;
             }
         });
-        return shelfBook;
+        return book;
+    }
+
+    checkBook(book, shelves) {
+        const { currentlyReading, wantToRead, read } = shelves;
+        const booksFromShelves = currentlyReading.concat(wantToRead, read);
+
+        return this.bookInShelf(book, booksFromShelves);
     }
     
     render() {
         const { shelfs, onMoveBook } = this.props;
         const { books } = this.state;
-        const { currentlyReading, wantToRead, read} = shelfs;
         let title = 'Welcome, please search your book above :)';
 
         if (this.state.query !== '') {
@@ -65,12 +70,12 @@ class SearchBooks extends Component {
                     <ol className="books-grid">
                         { !!books ? // if there are books show them, if not show failure message.
                             (books.map((b) => {
-                                const book = this.bookShelf(b, currentlyReading) || this.bookShelf(b, wantToRead) || this.bookShelf(b, read);
+                                const book = this.checkBook(b, shelfs);
                                 console.log(book.shelf, book.title);
                                 return (<li key={book.id}>
                                     <Book
                                         book={book}
-                                        name={ book.shelf || '' }
+                                        name={book.shelf}
                                         onChangeShelf={onMoveBook}
                                     />
                                 </li>)
