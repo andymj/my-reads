@@ -23,12 +23,7 @@ class BooksApp extends React.Component {
 	getBooks() {
 		BooksAPI.getAll().then((books) => {
 			this.setState({
-				books,
-				categories: {
-					currentlyReading: books.filter((book) => book.shelf === 'currentlyReading').map((book) => book.id),
-					wantToRead: books.filter((book) => book.shelf === 'wantToRead').map((book) => book.id),
-					read: books.filter((book) => book.shelf === 'read').map((book) => book.id)
-				}
+				books
 			})
 		});
 	}
@@ -43,23 +38,34 @@ class BooksApp extends React.Component {
 	 * @param {string} shelf 
 	 */
 	onMoveBook = (book, shelf) => {
-		BooksAPI.update({ id: book.id }, shelf).then((response) => this.getBooks());
+		if (book.shelf !== shelf) {
+			BooksAPI.update(book, shelf).then(() => {
+				book.shelf = shelf;
+				this.setState(state => ({
+					books: state.books.filter(b => b.id !== book.id).concat([ book ])
+				}));
+			});
+
+		}
 	}
 
 	render() {
+		const { books } = this.state;
+		const currentlyReading = books.filter(book => book.shelf === 'currentlyReading');
+		const wantToRead = books.filter(book => book.shelf === 'wantToRead');
+		const read = books.filter(book => book.shelf === 'read');
 		return (
 			<div className="app">
 				<Route exact path='/search' render={() => (
 					<SearchBooks
-						shelfs={this.state.categories}
+						shelfs={{currentlyReading, wantToRead, read}}
 						onMoveBook={this.onMoveBook}
 					/>
 				)} />
 				<Route exact path='/' render={() => (
 					<BookLibrary
 						onMoveBook={this.onMoveBook}
-						categories={this.state.categories}
-						books={this.state.books} />
+						categories={ {currentlyReading, wantToRead, read} }/>
 				)} />
 			</div>
 		);

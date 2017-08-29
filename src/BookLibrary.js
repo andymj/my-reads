@@ -4,7 +4,7 @@ import BookShelf from './BookShelf';
 
 class BookLibrary extends Component {
     render() {
-        const {onMoveBook, books, categories} = this.props;
+        const {onMoveBook, categories} = this.props;
         return (
             <div className="list-books">
                 <div className="list-books-title">
@@ -16,20 +16,17 @@ class BookLibrary extends Component {
                             onMoveBook={onMoveBook} 
                             name="currentlyReading" 
                             shelfTitle="Currently Reading" 
-                            shelf={categories.currentlyReading} 
-                            books={books} />
+                            books={categories.currentlyReading} />
                         <BookShelf 
                             onMoveBook={onMoveBook} 
                             name="wantToRead" 
                             shelfTitle="Want to Read" 
-                            shelf={categories.wantToRead} 
-                            books={books} />
+                            books={categories.wantToRead} />
                         <BookShelf 
                             onMoveBook={onMoveBook} 
                             name="read" 
                             shelfTitle="Read" 
-                            shelf={categories.read} 
-                            books={books} />
+                            books={categories.read} />
                     </div>
                 </div>
                 <div className="open-search">

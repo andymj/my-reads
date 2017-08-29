@@ -32,6 +32,16 @@ class SearchBooks extends Component {
             })
         }
     }
+
+    bookShelf(searchedBook, shelf) {
+        let shelfBook = searchedBook;
+        shelf.forEach(function(book) {
+            if (searchedBook.id === book.id) {
+                shelfBook = book;
+            }
+        });
+        return shelfBook;
+    }
     
     render() {
         const { shelfs, onMoveBook } = this.props;
@@ -54,19 +64,17 @@ class SearchBooks extends Component {
                 <div className="search-books-results">
                     <ol className="books-grid">
                         { !!books ? // if there are books show them, if not show failure message.
-                            (books.map((book) => (
-                                <li key={book.id}>
+                            (books.map((b) => {
+                                const book = this.bookShelf(b, currentlyReading) || this.bookShelf(b, wantToRead) || this.bookShelf(b, read);
+                                console.log(book.shelf, book.title);
+                                return (<li key={book.id}>
                                     <Book
                                         book={book}
-                                        name={
-                                            currentlyReading.includes(book.id) && "currentlyReading" ||
-                                            wantToRead.includes(book.id) && "wantToRead" ||
-                                            read.includes(book.id) && "wantToRead" ||
-                                            "none"}
+                                        name={ book.shelf || '' }
                                         onChangeShelf={onMoveBook}
                                     />
-                                </li>
-                            ))) : (<h2>{title}</h2>)}
+                                </li>)
+                            })) : (<h2>{title}</h2>)}
                     </ol>
                 </div>
             </div>
