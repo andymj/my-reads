@@ -18,7 +18,7 @@ class BooksApp extends React.Component {
 	};
 
 	/**
-	 * get the books from the BooksApi, and update the state object properties.
+	 * @description get the books from the BooksApi, and update the state object properties.
 	 */
 	getBooks() {
 		BooksAPI.getAll().then((books) => {
@@ -38,7 +38,7 @@ class BooksApp extends React.Component {
 	}
 
 	/**
-	 * update the Book to a different shelf and get all the books to include the updated Book.
+	 * @description updates or moves the Book to a different shelf and get all the books to include the updated Book.
 	 * @param {Object} book the book we want to move to a different shelf
 	 * @param {string} shelf 
 	 */

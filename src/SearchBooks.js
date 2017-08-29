@@ -11,8 +11,7 @@ class SearchBooks extends Component {
     }
 
     /**
-     * look up for the books,
-     * update the state object and renders the component if it changes.
+     * @description look up for the books, update the state object and renders the component if it changes.
      * @param {String} query
      */
     searchBooks = (query) => {
