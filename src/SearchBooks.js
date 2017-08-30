@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Debounce } from 'react-throttle';
 import * as BooksAPI from './BooksAPI';
 import Book from './Book';
 
@@ -33,49 +34,50 @@ class SearchBooks extends Component {
         }
     }
 
-    bookInShelf(book, booksInShelves) {
+    /**
+     * @description looks up if the book on search results is already on the shelves
+     * @param {Object} book
+     * @param {Array} booksInShelves
+     * @return {String} the name of the shelf if any, otherwise 'none'
+     */
+    getShelf(book, booksInShelves) {
+        let shelf = 'none';
+        
         booksInShelves.forEach(b => { 
             if (book.id === b.id) {
-                book.shelf = b.shelf;
+                shelf = b.shelf;
             }
         });
-        return book;
-    }
 
-    checkBook(book, shelves) {
-        const { currentlyReading, wantToRead, read } = shelves;
-        const booksFromShelves = currentlyReading.concat(wantToRead, read);
-
-        return this.bookInShelf(book, booksFromShelves);
+        return shelf;
     }
     
     render() {
-        const { shelfs, onMoveBook } = this.props;
-        const { books } = this.state;
-        let title = 'Welcome, please search your book above :)';
-
-        if (this.state.query !== '') {
-            title = 'Sorry, there are not Books that matched your search';
-        }
+        const { booksInShelves, onMoveBook } = this.props;
+        const { books, query } = this.state;
+        let title = query !== '' ? 'Sorry, there are not Books that matched your search' :
+            'Welcome, please search your book above :)';
 
         return (
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link to='/' className="close-search">Close</Link>
                     <div className="search-books-input-wrapper">
-                        <input onChange={(event) => this.searchBooks(event.target.value)} type="text" placeholder="Search by title or author" />
+                        <Debounce time="100" handler="onChange">
+                            <input onChange={(event) => this.searchBooks(event.target.value)} type="text" placeholder="Search by title or author" />
+                        </Debounce>
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
                         { !!books ? // if there are books show them, if not show failure message.
-                            (books.map((b) => {
-                                const book = this.checkBook(b, shelfs);
-                                console.log(book.shelf, book.title);
+                            (books.map((book) => {
+                                const shelf = this.getShelf(book, booksInShelves);
+                                console.log(book.title);
                                 return (<li key={book.id}>
                                     <Book
                                         book={book}
-                                        name={book.shelf}
+                                        name={shelf}
                                         onChangeShelf={onMoveBook}
                                     />
                                 </li>)
